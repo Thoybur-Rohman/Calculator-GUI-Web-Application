@@ -12,6 +12,9 @@ function printOutput(num){
         document.getElementById("output-value").innerText= getFormattedNumber(num);
 }
 function getFormattedNumber(num){
+    if(num=="-"){
+        return "";
+    }
     let n = Number(num)
     let value = n.toLocaleString("en");
     return value;
@@ -20,28 +23,46 @@ function reverseNumberFormat(num){
     return Number(num.replace(/,/g,''));
 }
 
-const operator = document.getElementsByClassName("operator");
+let operator = document.getElementsByClassName("operator");
 for (let i = 0 ; i < operator.length ;i++){
     operator[i].addEventListener('click',function(){
-        if (this.id == "clear"){
+        if (this.id=="clear"){
             printHistory("");
             printOutput("");
         }
-        if (this.id = "backspace"){
+        else if (this.id=="backspace"){
             let output=reverseNumberFormat(getOutput()).toString();
+            // This is used to revrse the code so that the backspace does not have to deal
+            // with the commas
             if (output){
                  output = output.substr(0,output.length-1)
                 printOutput(output);
+            }
+        }else{
+            let output = getOutput();
+            let history = getHistory();
+            if(output!="" || history!=""){
+                output= output==""?output:reverseNumberFormat(output);
+                history=history+output;
+                if(this.id=="="){
+                    let result=eval(history);
+                    printOutput(result);
+                    printHistory("");
+                }
+                else{
+                    history=history+this.id;
+                    printHistory(history);
+                    printOutput("");
+                }
 
             }
-
         }
     });
 }
 var number = document.getElementsByClassName("number");
 for(let i =0; i<number.length; i++){
     number[i].addEventListener('click',function(){
-        var output=reverseNumberFormat(getOutput());
+        let output=reverseNumberFormat(getOutput());
         if(output!=NaN){ //if output is a number
             output=output+this.id;
             printOutput(output);
